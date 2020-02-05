@@ -1,5 +1,5 @@
 import React from 'react'
-
+import PropTypes from 'prop-types'
 import './HallOfFame.css'
 
 const HallOfFame = ({ entries }) => (
@@ -28,3 +28,16 @@ export const FAKE_HOF = [
   { id: 1, guesses: 31, date: '06/10/2017', player: 'Louisa' },
   { id: 0, guesses: 48, date: '14/10/2017', player: 'Marc' },
 ]
+
+// La fonction HallOfFame ici…
+
+HallOfFame.propTypes = {
+  entries: PropTypes.arrayOf(
+    PropTypes.shape({
+      date: PropTypes.string.isRequired,
+      guesses: PropTypes.number.isRequired,
+      id: PropTypes.number.isRequired,
+      player: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+}

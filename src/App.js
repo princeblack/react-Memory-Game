@@ -9,7 +9,12 @@ import HallOfFame, { FAKE_HOF } from './HallOfFame'
 const SIDE = 6;
 const SYMBOLS = '😀🎉💖🎩🐶🐱🦄🐬🌍🌛🌞💫🍎🍌🍓🍐🍟🍿';
 class App extends Component {
-  cards = this.generateCards()
+  state = {
+    cards: this.generateCards(),
+    currentPair: [],
+    guesses: 0,
+    matchedCardIndices: [],
+  }
 
   generateCards() {
     const result = []
@@ -21,22 +26,52 @@ class App extends Component {
     }
     return shuffle(result)
   }
-  handleCardClick(card){
-    console.log(card,'clicked');
+
+  // Arrow fx for binding
+  handleCardClick = index => {
+    const { currentPair } = this.state
+
+    if (currentPair.length === 2) {
+      return
+    }
+    if (currentPair.length === 0) {
+      this.setState({ currentPair: [index] })
+      return
+    }
+    this.handleNewPairClosedBy(index)
   }
+  getFeedbackForCard(index) {
+    const { currentPair, matchedCardIndices } = this.state
+    const indexMatched = matchedCardIndices.includes(index) ;   
+    console.log(index);
+    console.log(currentPair);
+    
+    console.log(indexMatched);
+    console.log(matchedCardIndices);
+
+    if (currentPair.length < 2) {
+      return indexMatched || index === currentPair[0] ? 'visible' : 'hidden'
+    }
+    if (currentPair.includes(index)) {
+      return indexMatched ? 'justMatched' : 'justMismatched'
+    }
+    return indexMatched ? 'visible' : 'hidden'
+  }
+  
   render() {
-    const won = new Date().getSeconds() % 2;
+    const { cards, guesses, matchedCardIndices } = this.state
+    const won = matchedCardIndices.length === cards.length
 
     return (
       <div className="memory">
-        <GuessCount guesses={'013535'} />
-        {this.cards.map((card,index)=>(
+        <GuessCount guesses={guesses} />
+        {cards.map((card,index)=>(
           <Card
-          card={card} feedback= "visible" key = {index} onClick= {this.handleCardClick}
+          card={card} feedback={this.getFeedbackForCard(index)}      index={index}
+          key = {index} onClick= {this.handleCardClick}
           />
         ))}
         {won && <HallOfFame entries={FAKE_HOF}/>}
-        <wrapComponent/>
       </div>
     )
   }
